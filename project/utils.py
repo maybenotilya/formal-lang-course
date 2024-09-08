@@ -27,6 +27,11 @@ def get_graph_info(graph: nx.MultiDiGraph):
     )
 
 
+def get_graph_info_by_name(graph_name: str) -> GraphInfo:
+    graph = load_graph(graph_name)
+    return get_graph_info(graph)
+
+
 def labeled_two_cycles_graph_to_dot(
     n: int, m: int, labels: Tuple[str, str], save_path: Path
 ):
