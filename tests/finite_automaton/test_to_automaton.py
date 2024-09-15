@@ -1,5 +1,4 @@
 import pytest
-import cfpq_data
 
 from typing import Set
 
