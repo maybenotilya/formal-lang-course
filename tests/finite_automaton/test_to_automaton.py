@@ -3,7 +3,7 @@ import pytest
 from typing import Set
 
 from project.utils import load_graph, get_graph_info
-from project.finite_automaton.to_automaton import regex_to_dfa, graph_to_nfa
+from project.regular.to_automaton import regex_to_dfa, graph_to_nfa
 
 
 @pytest.mark.parametrize(
