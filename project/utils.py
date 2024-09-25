@@ -19,7 +19,7 @@ def load_graph(graph_name: str) -> nx.MultiDiGraph:
     return graph
 
 
-def get_graph_info(graph: nx.MultiDiGraph):
+def get_graph_info(graph: nx.MultiDiGraph) -> GraphInfo:
     return GraphInfo(
         number_of_nodes=graph.number_of_nodes(),
         number_of_edges=graph.number_of_edges(),
