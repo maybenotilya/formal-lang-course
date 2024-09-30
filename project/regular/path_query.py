@@ -2,8 +2,8 @@ import networkx as nx
 
 from itertools import product
 
-from project.finite_automaton.automatons import AdjacencyMatrixFA, intersect_automata
-from project.finite_automaton.to_automaton import regex_to_dfa, graph_to_nfa
+from project.regular.automatons import AdjacencyMatrixFA, intersect_automata
+from project.regular.to_automaton import regex_to_dfa, graph_to_nfa
 
 
 def tensor_based_rpq(
