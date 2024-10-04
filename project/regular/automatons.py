@@ -49,6 +49,10 @@ class AdjacencyMatrixFA:
             label: csr_matrix(matrix) for label, matrix in transitions.items()
         }
 
+    @property
+    def symbols(self):
+        return set(self.adj_decomposition.keys())
+
     def accepts(self, word: Iterable[Symbol]) -> bool:
         current_states = {state for state in self.start_states}
 
