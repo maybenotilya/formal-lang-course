@@ -1,6 +1,6 @@
 import networkx as nx
 
-from pyformlang.cfg import CFG, Terminal
+from pyformlang.cfg import CFG
 
 from project.cfg.normal_forms import cfg_to_weak_normal_form
 
