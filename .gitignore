@@ -145,3 +145,12 @@ _minted-presentation/
 
 # Ruff
 .ruff_cache
+
+# ANTLR4
+
+**/.antlr
+*.interp
+*.tokens
+**/GraphLangLexer.py
+**/GraphLangListener.py
+**/GraphLangParser.py
