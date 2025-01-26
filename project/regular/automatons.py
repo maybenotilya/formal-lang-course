@@ -81,7 +81,7 @@ class AdjacencyMatrixFA:
         A = np.eye(self.number_of_states, dtype=bool)
 
         for adj_matrix in self.adj_decomposition.values():
-            A |= adj_matrix.toarray()
+            A |= adj_matrix.toarray().astype(bool)
 
         closure = A.copy()
         for _ in range(self.number_of_states):
