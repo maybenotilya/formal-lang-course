@@ -1,9 +1,13 @@
 import networkx as nx
 
 from pyformlang.cfg import CFG
+from pyformlang.rsa import RecursiveAutomaton
 from scipy.sparse import csr_matrix
 
 from project.cfg.normal_forms import cfg_to_weak_normal_form
+from project.cfg.rsm import rsm_to_nfa
+from project.regular.to_automaton import graph_to_nfa
+from project.regular.automatons import AdjacencyMatrixFA, intersect_automata
 
 
 def hellings_based_cfpq(
@@ -102,6 +106,59 @@ def matrix_based_cfpq(
     return {
         (idx_to_node_mapping[u], idx_to_node_mapping[v])
         for u, v in zip(*decomposition[cfg.start_symbol].nonzero())
+        if idx_to_node_mapping[u] in start_nodes
+        and idx_to_node_mapping[v] in final_nodes
+    }
+
+
+def tensor_based_cfpq(
+    rsm: RecursiveAutomaton,
+    graph: nx.DiGraph,
+    start_nodes: set[int] = None,
+    final_nodes: set[int] = None,
+) -> set[tuple[int, int]]:
+    rsm_automaton = AdjacencyMatrixFA(rsm_to_nfa(rsm))
+    graph_automaton = AdjacencyMatrixFA(graph_to_nfa(graph, start_nodes, final_nodes))
+
+    for sym in rsm.labels:
+        if sym not in graph_automaton.adj_decomposition.keys():
+            graph_automaton.adj_decomposition[sym] = csr_matrix(
+                (graph_automaton.number_of_states, graph_automaton.number_of_states),
+                dtype=bool,
+            )
+
+    changed = True
+
+    while changed:
+        changed = False
+        intersection = intersect_automata(rsm_automaton, graph_automaton)
+        transitive_closure = intersection.transitive_сlosure()
+        idx_to_state_mapping = {v: k for k, v in intersection.states.items()}
+
+        for row_id, col_id in zip(*transitive_closure.nonzero()):
+            (row_symbol, row_rsm_state), row_graph_state = idx_to_state_mapping[row_id]
+            (col_symbol, col_rsm_state), col_graph_state = idx_to_state_mapping[col_id]
+
+            dfa = rsm.boxes[row_symbol].dfa
+            if (
+                row_symbol == col_symbol
+                and row_rsm_state in dfa.start_states
+                and col_rsm_state in dfa.final_states
+            ):
+                if not graph_automaton.adj_decomposition[row_symbol][
+                    graph_automaton.states[row_graph_state],
+                    graph_automaton.states[col_graph_state],
+                ]:
+                    graph_automaton.adj_decomposition[row_symbol][
+                        graph_automaton.states[row_graph_state],
+                        graph_automaton.states[col_graph_state],
+                    ] = True
+                    changed = True
+
+    idx_to_node_mapping = {v: k for k, v in graph_automaton.states.items()}
+    return {
+        (idx_to_node_mapping[u], idx_to_node_mapping[v])
+        for u, v in zip(*graph_automaton.adj_decomposition[rsm.initial_label].nonzero())
         if idx_to_node_mapping[u] in start_nodes
         and idx_to_node_mapping[v] in final_nodes
     }
